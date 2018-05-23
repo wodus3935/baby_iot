@@ -1,0 +1,31 @@
+.talk-message {
+	background-color: lightgray;
+	border-radius: 5px;
+	padding: 5px;
+	display: inline-block;
+	position: relative;
+}
+
+/* ::은 가상요소를 만든다는 뜻이다. 가상요소?? */
+.send-message::before {
+	content: " ";
+	position: absolute;
+	top: 15px;
+	right: 100%;
+	margin-top: -10px;
+	border-width: 6px;
+	border-style: solid;
+	border-color: transparent lightgray transparent transparent;
+}
+
+.receive-message::after {
+	content: " ";
+	position: absolute;
+	top: 15px;
+	left: 100%;
+	margin-top: -10px;
+	border-width: 6px;
+	border-style: solid;
+	border-color: transparent transparent transparent lightgray;
+}
+

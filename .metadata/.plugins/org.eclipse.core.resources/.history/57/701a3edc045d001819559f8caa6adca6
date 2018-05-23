@@ -1,0 +1,6 @@
+package edu.iot.butter.model;
+
+@Data
+public class Dairy {
+	
+}

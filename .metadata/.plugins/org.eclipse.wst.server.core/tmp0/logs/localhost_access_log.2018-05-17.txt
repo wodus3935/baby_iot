@@ -1,0 +1,8 @@
+127.0.0.1 - - [17/May/2018:19:39:07 +0900] "GET / HTTP/1.1" 404 1074
+70.12.112.64 - - [17/May/2018:19:39:15 +0900] "GET /butter/ HTTP/1.1" 200 5694
+70.12.112.64 - - [17/May/2018:19:39:15 +0900] "GET /butter/resources/js/common.js;jsessionid=128BDB010752E9FAB19DC31EABFD1225 HTTP/1.1" 200 749
+70.12.112.64 - - [17/May/2018:19:39:15 +0900] "GET /butter/resources/css/main.css;jsessionid=128BDB010752E9FAB19DC31EABFD1225 HTTP/1.1" 200 56
+70.12.112.64 - - [17/May/2018:19:44:02 +0900] "GET /butter/ HTTP/1.1" 200 5342
+70.12.112.64 - - [17/May/2018:19:44:03 +0900] "GET /butter/resources/js/common.js HTTP/1.1" 200 749
+70.12.112.64 - - [17/May/2018:19:44:03 +0900] "GET /butter/resources/css/main.css HTTP/1.1" 200 56
+70.12.112.64 - - [17/May/2018:19:44:03 +0900] "GET /favicon.ico HTTP/1.1" 404 1085

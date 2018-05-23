@@ -1,0 +1,5 @@
+package edu.iot.butter.service;
+
+public interface DiaryService {
+
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.iot.butter.dao.AvataDao">
+<select id="getCount" resultType="int">
+	select count(*)
+	 from avatas
+</select>
+
+<select id="selectList" parameterType="Pagination" resultType="Avata">
+	select user_id, image
+	from (
+		select row_number() over (order by user_id) as seq, user_id, image from avatas
+	)
+	where seq between = #{start} and #{end}	
+</select>
+
+<select id="selectOne" parameterType="String" resultType="Avata">
+	select * from avatas
+	where user_id=#{userId}
+</select>
+
+<insert id="insert" parameterType="Avata">
+	insert into avatas (user_id, image)
+	values(#{userId}, #{image})	
+</insert>
+
+<update id="update" parameterType="Avata">
+	update avatas set
+	 	image = #{image}
+	 where user_id=#{userId}
+</update>
+
+<delete id="delete" parameterType="String">
+	delete avatas
+	where user_id = #{userId}
+</delete>
+</mapper>

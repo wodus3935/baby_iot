@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+	<!-- 페이지 구성요소 지정 -->
+	<definition name="default" template="/WEB-INF/views/layouts/default_template.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/layouts/header.jsp"/>
+		<put-attribute name="menu" value="/WEB-INF/views/layouts/menu.jsp"/>	
+		<put-attribute name="footer" value="/WEB-INF/views/layouts/footer.jsp"/>
+		<put-attribute name="body" value="/WEB-INF/views/layouts/body.jsp"/>	
+	</definition>
+		
+<!-- <definition name="home" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/home.jsp/"/>
+	</definition> -->
+	
+	<definition name="*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+	
+	<definition name="*/*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	
+	<!-- 관리자 관련 내용 보여줄 때-->
+	<definition name="admin/*/*" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/admin/{1}/{2}.jsp" />
+	</definition>
+</tiles-definitions>

@@ -1,0 +1,116 @@
+function lineChart(labels, values){
+	//lineChart
+	var ctxL = document.getElementById("lineChart").getContext('2d');
+	var myLineChart = new Chart(ctxL, {		
+	    type: 'line',
+	    data: {
+	        /* labels: ["1시", "2시", "3시", "4시", "5시", "6시", "7시"], */
+	        /* 미리선언해둔 변수로 대체 */
+	        labels: labels,
+	        datasets: [
+	            {		            	
+	                label: "온도 변화",
+	                fillColor: "rgba(220,220,220,0.2)",
+	                strokeColor: "rgba(220,220,220,1)",
+	                pointColor: "rgba(220,220,220,1)",
+	                pointStrokeColor: "#fff",
+	                pointHighlightFill: "#fff",
+	                pointHighlightStroke: "rgba(220,220,220,1)",
+	               /*  data: [65, 59, 80, 81, 56, 55, 40] */
+	              	data: values
+	            }
+	        ]
+	    },
+	    options: {
+	        responsive: true
+	    } 
+	})
+}
+
+//선언만 해놓기~
+function showLineChart(data){
+	var labels=data.map(item=>item.id + "시");
+	
+/* 	var labels= data.map(function(item){
+		return item.id + ' 시';
+	}) */
+	
+	var values=data.map(item=>item.value);
+	
+	lineChart(labels, values);
+}
+
+//이것은 document가 load되었을때 먼저 실행이 되기 때문에 먼저 된다.
+$(function(){
+	var sensor_values;
+	var api = "${root}api/sensor/";
+	$.get(api, function(data){//배열이다.
+		console.log(data);
+		//기존의 값을 가지기 위해서 
+		sensor_values=data;
+		showLineChart(sensor_values);	
+	//item배별의 item, 두번째는 index
+	/* 	data.forEach(function(item, ix){
+			console.log(typeof item.type);
+			var str = `<p>\${item.id} , \${item.type} , \${item.value} , \${item.time}</p>`;
+			$('#sensor_panel').append($(str));
+		}) */
+	})
+	
+	$('#add').click(function(e){
+		var data = {
+				id : 8,
+				type : "온도",
+				value : 35
+		};
+		
+		$.ajax({
+			url : api,
+			//data : data,
+			//data를 jason 형식으로 바꾸자~~
+			data : JSON.stringify(data),
+			type : "post",
+			contentType : 'application/json',
+			success : function(result){
+				//차트 다시 그리기
+				sensor_values.push(data);
+				showLineChart(sensor_values);
+			}
+		})
+	})
+	
+	$('#edit').click(function(e){
+		//4번째 엘리먼트를 가져와서 20으로 수정
+		var data=sensor_values[4];
+		data.value = 20.0;
+		
+		$.ajax({
+			url : api,
+			type : 'put',
+			data : JSON.stringify(data),
+			contentType : 'application/json',
+			success : function(result){
+				showLineChart(sensor_values);
+			}
+		})
+	})
+	
+	$('#delete').click(function(e){
+		
+		var target = $(this).data('target');
+		
+		$.ajax({
+			url : api + target,// Pathvariable로 받기~
+			type : 'delete',
+			success : function(result){
+				if(result){
+					//숫자로 바꾸기 parseInt 해도 된다.
+					var index = Number(target);
+					//index부터 첫번째 프로퍼티를 지워 버리기
+					sensor_values.splice(index, 1);
+					showLineChart(sensor_values);
+				}
+			}
+		})
+	})
+});

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.butter.dao.TalkDao">
+
+	<select id="getCount" parameterType="Talk" resultType="int">
+		select
+		count(*) from talks
+		where user_id=#{userId}	
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="Talk">
+		select *
+		from talks
+		where talk_id=#{talkId}
+	</select>
+	
+	<select id="selectList" parameterType="Talk" resultType="Talk">
+		select *
+		from talks
+		where user_id=#{userId} AND
+		with_talk=#{withTalk}
+		order by talk_id	
+	</select>
+	
+	
+	<select id="getNewTalks" parameterType="String" resultType="Talk">
+		select * from talks
+		where checked = 0 and user_id = #{userId}
+		order by talk_id desc
+	</select>
+	
+	<select id="selectOneListPerUser" parameterType="String" resultType="Talk">
+		select * from TALKS
+		where user_id=#{userId} and received = 1
+			and talk_id in ( select max(talk_id) from TALKS
+			where user_id=#{userId} and received = 1
+			group by with_talk)
+		order by reg_date desc		
+	</select>
+	
+	
+	<insert id="insert" parameterType="Talk">
+		insert into talks(talk_id, user_id, with_talk, received, checked, message, reg_date)
+		values(talk_seq.nextval, #{userId}, #{withTalk}, #{received}, #{checked}, #{message}, sysdate)
+	</insert>
+	
+	<update id="updateCheck" parameterType="Talk">
+		<![CDATA[
+			update talks set
+			checked = 1
+			where user_id = #{userId} and with_talk = #{withTalk} and checked=0			
+		]]>
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from talks
+		where
+		talk_id=#{talkId}
+	</delete>
+
+</mapper>

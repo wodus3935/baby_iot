@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.butter.dao.ReplyDao">
+	<!-- 댓글 갯수 -->
+	<select id="getCount" parameterType="int" resultType="int">
+		SELECT count(*)
+		FROM replys
+		where board_id = #{boardId}
+	</select>
+	
+	<!-- 처음 댓글만 뿌려줄때 -->	
+	<select id="selectList" parameterType="int" resultType="Reply">
+		SELECT * FROM replys
+		WHERE board_id=#{boardId}
+		ORDER BY reply_level, reg_date desc
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="Reply">
+		select *
+		from replys
+		where reply_id = #{replyId}
+	</select>
+	
+	<!-- 입력할때 -->
+	<insert id="insert" parameterType="Reply" useGeneratedKeys="true" keyColumn="reply_id" keyProperty="replyId">
+		insert into replys (reply_id, board_id, reply_level, parent, writer,deleted, content, reg_date, update_date)
+		 values(replys_SEQ.NEXTVAL, #{boardId}, #{replyLevel}, #{parent}, #{writer}, 0, #{content}, sysdate, sysdate)		
+	</insert>
+	
+	<!-- 내용수정 -->
+	<update id="update" parameterType="Reply">
+		update replys set
+			content = #{content},
+			update_date = sysdate
+		where reply_id = #{replyId}
+	</update>
+	
+	<!-- 지우기 -->
+	<update id="delete" parameterType="int">
+	 update replys set
+	  content = '삭제된 글입니다.',
+	  deleted = 1,
+	  update_date = sysdate
+	  WHERE reply_id=#{replyId}
+	 </update>
+</mapper>

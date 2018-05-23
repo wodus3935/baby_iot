@@ -1,0 +1,8 @@
+package edu.iot.butter.model;
+
+import lombok.Data;
+
+@Data
+public class Dairy {
+	
+}

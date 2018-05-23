@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.iot.butter.dao.BoardDao">
+	<select id="getCount" resultType="int">
+		SELECT count(*)
+		FROM boards
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="Board">
+		select *
+		from boards
+		where board_id=#{boardId}
+	</select>
+	
+	<!-- 목록용으로 content 컬럼 은 제외 -->
+	<select id="selectList" parameterType="pagination" resultType="Board">
+		select board_id, title, writer, read_cnt, reg_date
+		from(
+			select row_number() over (order by reg_date desc) as seq, board_id, title, writer, read_cnt, reg_date
+			from boards
+		)
+		where seq between #{start} and #{end}		
+	</select>
+	<!-- board_id에 자동생성되는 key를 가져와서 boardId라는 property에 넣겠다. -->
+	<insert id="insert" parameterType="Board" useGeneratedKeys="true" keyColumn="board_id" keyProperty="boardId">
+	insert into boards
+	(board_id, title, writer, password, read_cnt, content, reg_date, update_date)
+	values(BOARDS_SEQ.NEXTVAL, #{title}, #{writer}, #{password}, #{readCnt},#{content}, sysdate, sysdate)
+	</insert>
+	
+	<update id="update" parameterType="Board">
+		update boards set
+			title = #{title},
+			content = #{content},
+			update_date = sysdate
+		where board_id=#{boardId} and password=#{password}
+	</update>
+	
+	<!-- 게시글 조회수 증가 : 게시글 보기 할 때마다 호출 -->
+	<update id="increaseReadCnt" parameterType="int">
+		update boards SET
+		 read_cnt = read_cnt + 1
+		where board_id=#{boardId}
+	</update>
+	
+	<!-- 게시글 삭제, 비밀번호를 아는 경우에  -->
+	<delete id="deleteByUser" parameterType="Board">
+		delete from boards
+		where board_id=#{boardId} and password=#{password}
+	</delete>
+	
+	<!-- 게시글 삭제, 관리자 삭제 기능(base dao에서 쓴다.) -->
+	<delete id="delete" parameterType="int">
+		delete from boards
+		where board_id=#{boardId}
+	</delete>
+</mapper>

@@ -1,0 +1,7 @@
+package edu.iot.butter.dao;
+
+
+public interface DiaryDao extends BaseDao<Diary, Integer> {
+	
+	
+}

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--CDATA는 where절에 <가 들어가는 경우를 대비하여 xml로 해석하지말고 문자열로 해석하라는 뜻이다.(이스케이프의 의미이다.)  -->
+<!--xml 주석 단축키 : ctrl + shift + / -->
+<!-- dao의 package 명 설정 -->
+<!-- 복붙할때 namespace 수정한다. -->
+<mapper namespace="edu.iot.butter.dao.MemberDao">	
+
+	<!-- id를보고 인터페이스 어떻게 만들지 보고 자동화가 가능하다.(interface의 매서드명으로 잡을것)-->
+	<select id="getCount" resultType="int"><![CDATA[
+		select count(*) as total from members
+	]]></select>
+	
+	<!--resultType은 리턴값의 형태, patameterType은 매개변수는 한개 밖에 못쓰기때문에 한번에 보낼 경우에 매개변수 2개를 맵에 넣어서 쓴다!  -->
+	<!--#{start} 는 map에 저장된 start라는키를 가지고 있는 value값을 가져온다 데이터 형은 mybatis에서 정해준다. key값으로 찾아서 value값을 get,set메서드를 사용하는 것이기 때문에 안에들어있는 key값(start)을 정확하게 입력하는 것이 중요하다 -->
+	<!-- resulttype의 멤버는 alias로 줄여놨기 때문에 Member를 쓸수 있다. (모델객체의 경우 getter가있어야한다??)-->
+	<!-- 전달된맵에 대해서 selectList이름으로 get이 됨 -->
+	<!-- 리턴값은 여러줄인데 list로 나온다. where절에 만족하는 값이 없으면 비어있는 list(엘리먼트 갯수가 0)-->
+	<select id="selectList" resultType="Member" parameterType="Pagination"><![CDATA[
+				select *
+				from (select row_number() over (order by reg_date) as seq, user_id, name, password, cell_phone, email, address, grade, reg_date, update_date from members)
+				where seq between #{start} and #{end}
+	]]></select>
+	<!-- selectOne 하나거나 영이거나 (a만약 where절을 만족하는 게 없으면 null이된다.)-->
+	<select id="selectOne" resultType="Member" parameterType="String">
+	<![CDATA[ 
+		select * from members
+		where user_id = #{userId}
+	]]>
+	</select>
+	
+	<select id="selectListWithMessages" resultType="Member"><![CDATA[
+		select *
+		from
+			members m,
+			(select with_talk, count(*) as newMessages from talks
+			 where checked = 0 and user_Id = #{userId}
+			 group by with_talk
+			) t
+		where
+			m.user_id <> #{userId} and
+			m.user_id = t.with_talk(+)
+		order by newMessages desc
+	]]></select>
+	
+	<!-- insert는 resultType이 항상 int이기 때문에 안써줘도 된다 -->
+	<!-- getter를 한다~?????? -->
+	<!-- id는 메서드명이다! -->
+	<!-- mybatis에서 객체 전달하는데 타입이 멤버 #{userid} jdbc에서는 물음표였다. set으로 정확하게 기술 했었음. 번거로운 작업이다. mybatis는 property명 적어주면 작은따옴표해야되면 알아서 해준다. -->
+	<!-- #{userid}를 meber 객체의 property로 보겠다. 자바에서는 property를 getter setter로 본다????? 뭔소리지..getUserId()로 결정된다. -->
+	<!-- return값은 수정된 열의 갯수 -->
+	<insert id="insert" parameterType="Member" ><![CDATA[
+		insert into members
+		(user_id,name,password,cell_phone,email,address,grade)
+		values(#{userId},#{name},#{password},#{cellPhone},#{email},#{address},1)
+	]]></insert>
+	
+	<!-- 입력한 데이터가 제약조건을 위배한경우 예외처리가 된다~~ -->
+	<!-- password가 안앚으면 return 0 -->
+	<update id="update" parameterType="Member"><![CDATA[
+		update members set
+		 cell_phone=#{cellPhone},
+		 email=#{email},
+		 address=#{address},
+		 grade=#{grade},
+		 update_date=sysdate
+		where user_id=#{userId} and password = #{password}
+	]]>	</update>
+	
+	<!-- 관리자에 의한 업데이트 -->
+	<update id="updateByAdmin" parameterType="Member"><![CDATA[
+		update members set
+		 cell_phone=#{cellPhone},
+		 email=#{email},
+		 address=#{address},
+		 update_date=sysdate
+		where user_id=#{userId}
+	]]>	</update>
+	
+		<!-- 입력한 데이터가 제약조건을 위배한경우 예외처리가 된다~~ -->
+	<!-- password가 안앚으면 return 0 -->
+	
+	<!-- 비밀변호 변경 -->
+	<!-- 멤버가 없으므로 새로운 모델객체 생성 -->
+	<update id="changePassword" parameterType="Password"><![CDATA[
+		update members set
+		 password=#{newPassword},
+		 update_date=sysdate
+		where user_id=#{userId} and password = #{oldPassword}
+	]]>	</update>
+	
+	<!-- 관리자에 의한 비밀번호변경 -->
+	<update id="changePasswordByAdmin" parameterType="Password"><![CDATA[
+		update members set
+		 password=#{newPassword},
+		 update_date=sysdate
+		where user_id=#{userId}
+	]]>	</update>
+	
+	<delete id="delete" parameterType="String"><![CDATA[
+		delete from members
+		where user_id = #{userId} 
+	]]>	
+	</delete>
+	
+</mapper>

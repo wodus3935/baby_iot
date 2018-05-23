@@ -1,0 +1,5 @@
+package edu.iot.butter.controller;
+
+public class DiaryController {
+
+}

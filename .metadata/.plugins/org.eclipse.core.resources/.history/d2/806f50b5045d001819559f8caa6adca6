@@ -1,0 +1,9 @@
+package edu.iot.butter.dao;
+
+
+public interface DiaryDao extends BaseDao<Diary, Integer> {
+	
+	int deleteByUser(Board board) throws Exception;
+	
+	int increaseReadCnt(int boardId) throws Exception;
+}
